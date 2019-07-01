@@ -7,7 +7,7 @@ provider:
 
 functions:
   ceps:
-    handler: handler.ceps
+    handler: src/handler.ceps
     events:
       - http:
           path: ceps/{cep}
