@@ -1,0 +1,21 @@
+service: consulta-cep
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: us-east-1
+
+functions:
+  ceps:
+    handler: handler.ceps
+    events:
+      - http:
+          path: ceps/{cep}
+          method: get
+          request:
+          parameters:
+            paths:
+              cep: true
+
+plugins:
+  - serverless-offline
