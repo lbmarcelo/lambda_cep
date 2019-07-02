@@ -1,3 +1,4 @@
+const reponse = require('./helpers/response')
 const correios = require('./services/correios-service')
 
 const handler = async event => {
@@ -6,15 +7,9 @@ const handler = async event => {
 
     const result = await correios.consulta(cep)
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result)
-    }
+    return reponse(result, 200)
   } catch (error) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: error.message })
-    }
+    return reponse(error.message, 400, true)
   }
 }
 
