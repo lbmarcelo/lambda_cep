@@ -2,22 +2,16 @@ const request = require('request-promise-native')
 const { xml2json } = require('xml-js')
 
 const sanitizeObj = xmlObj => {
-  const xml = JSON.parse(xml2json(xmlObj))
+  const xml = JSON.parse(xml2json(xmlObj, { compact: true }))
 
-  const obj = {}
+  const objCep =
+    xml['soap:Envelope']['soap:Body']['ns2:consultaCEPResponse']['return']
 
-  xml.elements[0].elements[0].elements[0].elements[0].elements.map(item => {
-    const prop = item.name
-    let value = ''
+  const mapped = Object.keys(objCep).map(prop => ({
+    [prop]: objCep[prop]._text
+  }))
 
-    if (item.elements && item.elements.length > 0) {
-      value = item.elements[0].text || ''
-    }
-
-    obj[prop] = value
-  })
-
-  return obj
+  return Object.assign({}, ...mapped)
 }
 
 const envelope = cep => {
@@ -52,9 +46,11 @@ const consulta = async cep => {
 
     return sanitizeObj(xml)
   } catch (error) {
-    const xml = JSON.parse(xml2json(error.error))
+    const xml = JSON.parse(xml2json(error.error, { compact: true }))
+
     const msg =
-      xml.elements[0].elements[0].elements[0].elements[1].elements[0].text
+      xml['soap:Envelope']['soap:Body']['soap:Fault']['faultstring']._text
+
     throw Error(msg)
   }
 }
